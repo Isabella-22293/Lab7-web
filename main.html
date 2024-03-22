@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog de Cocina</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            background-image: url('Imagenes/cocina.jpg');
+            background-size: cover;
+            background-position: center; 
+            font-family: Arial, sans-serif;
+            margin: 1;
+            padding: 1;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            
+        }
+        .post {
+            background-image: url('Imagenes/fondo.jpg');
+            margin-bottom: 60px;
+            border: 1px solid #1c8be6; 
+            padding-bottom: 20px;
+            width: 400px;
+            height: 300px;
+            margin: 10px;
+            padding: 10px;
+            background-size: cover;
+            background-position: center;
+            display: inline-block;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #ffffff; 
+            text-align: left;
+        }
+
+        .post h2 {
+            margin-top: 0;
+            color: #1609cc; 
+        }
+
+        .post p {
+            color: #2115c2; 
+        }
+
+        a {
+            color: #ffffff; 
+        }
+
+        h3 {
+            color: #ffffff; 
+            display: flex;
+            justify-content: center;
+        }
+     
+        .loading-spinner {
+            border: 5px solid #f3f3f3; 
+            border-top: 5px solid #3498db; 
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+            margin-top: 50px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media only screen and (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            .post {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+    function Header() {
+    return (
+        <header>
+            <h1>Blog de Cocina</h1>
+            <div style={{ textAlign: 'right' }}>
+                <a href="/crear-post">Crear Post</a>
+            </div>
+        </header>
+    );
+    }
+    function Loading () {
+    return (
+        <div className="loading-spinner"></div>
+    );
+    };
+
+    const PostList = () => {
+    if (loading) {
+        return <Loading />;
+    }
+
+    if (posts.length === 0) {
+        return <h3>No hay posts disponibles.</h3>;
+    }
+
+    return (
+        <div className="post-list">
+        {posts.map(post => (
+            <Post key={post.id} post={post} />
+        ))}
+        </div>
+    );
+    };
+    
+    const API = async () => {
+        const data = await fetch("http://localhost:3000/posts");
+        const dataJson = await data.json();
+        console.log(dataJson);
+        return dataJson;
+    };
+
+        const { useState, useEffect } = React;
+
+        const AsyncComponent = React.lazy(() => import('./AsyncComponent'));
+        function App() {
+            const [posts, setPosts] = useState([]);
+            const [loading, setLoading] = useState(true);
+
+            const App = () => {
+                return (
+                    <React.Suspense fallback={<h3>Cargando...</h3>}>
+                    <AsyncComponent />
+                    </React.Suspense>
+                )
+                }
+            useEffect(() => {
+                API().then(data => {
+                    setPosts(data);
+                    setLoading(false);
+                }).catch(error => {
+                    console.error('Error:', error);
+                    setLoading(false);
+                });
+            }, []);
+
+            const Post = ({ post }) => {
+                return (
+                    <div className="post">
+                        <h2>{post.title}</h2>
+                        <p>{post.content}</p>
+                        <p><strong>Tipo:</strong> {post.Tipo}</p>
+                        <p><strong>Preparación:</strong> {post.Preparacion}</p>
+                        <p><strong>Descripción:</strong> {post.Descripcion}</p>
+                        <p><strong>Ingredientes:</strong> {post.Ingredientes}</p>
+                        <p><strong>created_at:</strong> {post.created_at}</p>
+                    </div>
+                );
+            };            
+
+            const Loading = () => {
+                return <h3>Cargando...</h3>;
+            };
+
+            const PostList = () => {
+                if (loading) {
+                    return <Loading />;
+                }
+
+                if (posts.length === 0) {
+                    return <h3>No hay posts disponibles.</h3>;
+                }
+
+                return (
+                    <div className="post-list">
+                        {posts.map(post => (
+                            <Post key={post.id} post={post} />
+                        ))}
+                    </div>
+                );
+            };
+
+            return (
+                <div>
+                    <Header />
+                    <PostList />
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'))
+        root.render(<App />)
+    </script>
+</body>
+</html>
