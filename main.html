@@ -73,6 +73,13 @@
             margin-top: 50px;
         }
 
+        footer {
+            background-color: #b2f9ff;
+            color: #044e52;
+            text-align: center;
+            padding: 20px;
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -101,6 +108,17 @@
         </header>
     );
     }
+
+    function Footer() {
+    return (
+        <footer>
+            <div style={{ textAlign: 'center' }}>
+            <b>Derecho reservado 2024</b>
+            </div>
+                </footer>
+            );
+        }
+
     function Loading () {
     return (
         <div className="loading-spinner"></div>
@@ -196,6 +214,7 @@
                 <div>
                     <Header />
                     <PostList />
+                    <Footer />
                 </div>
             );
         };
